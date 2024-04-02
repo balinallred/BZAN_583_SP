@@ -3,28 +3,19 @@ Rprof()
 start <- Sys.time()
 
 n <- 1000000
-counter <- 0
 
-for (i in 1:n) {
-  #initial wins
-  cubs <- 11
-  brewers <- 12
-  cardinals <- 15
-  
-  #cubs vs cards 6 games
-  cubs_wins <- sum(sample(c(0,1),6, replace = T))
-  cubs <- cubs + cubs_wins
-  cardinals <- cardinals + 6 - cubs_wins
-  
-  #cubs other 3 games
-  cubs <- cubs + sum(sample(c(0,1),3, replace = T))
-  
-  #brewers other 9 games
-  brewers <- brewers + sum(sample(c(0,1),9, replace = T))
-  
-  counter <- counter + ifelse(cubs == cardinals & cubs == brewers,1,0)
-  
-}
+# Store game outcomes in matrix and sum across rows
+cubs_wins_vs_cards <- rowSums(matrix(sample(c(0, 1), 6 * n, replace = TRUE), ncol = 6))
+cubs_other_games <- rowSums(matrix(sample(c(0, 1), 3 * n, replace = TRUE), ncol = 3))
+brewers_other_games <- rowSums(matrix(sample(c(0, 1), 9 * n, replace = TRUE), ncol = 9))
+
+# Calculate total wins for each team
+cubs_total_wins <- 11 + cubs_wins_vs_cards + cubs_other_games
+brewers_total_wins <- 12 + brewers_other_games
+cardinals_total_wins <- 21 - cubs_wins_vs_cards  # 15 wins + (6 - cubs wins over cards)
+
+# Counting up equal cases
+counter <- sum(cubs_total_wins == brewers_total_wins & cubs_total_wins == cardinals_total_wins)
 
 print(counter/n)
 
