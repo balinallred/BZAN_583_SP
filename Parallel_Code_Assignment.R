@@ -5,17 +5,21 @@ process_parquet <- function(parquet_file) {
   # Read parquet file
   data <- arrow::read_parquet(parquet_file)
   
+  # Removing rows with null temp values
+  data <- data[!is.na(data[, 8]), ]
+  
   # Convert datetime column
   data$datetime <- as.POSIXct(paste(data[,1], sprintf("%04d", data[,2]), sep = " "), format = "%Y-%m-%d %H%M", tz = "UTC")
   colnames(data)[8] <- "Temp"
   
   # Arrange by datetime and take the last 10%
   data <- data[order(data$datetime), ]
-  data <- tail(data, round(nrow(data) * 0.01))
+  
+  # Limiting rows for run time in assignment
+  data <- tail(data, max(round(nrow(data) * 0.01),1000))
   
   # Create tsibble
   df <- tsibble::tsibble(data[, c(20, 8)])
-  df$Temp[is.na(df$Temp)] <- mean(df$Temp, na.rm = TRUE)
   
   # Split into train and test sets
   train <- dplyr::slice_head(.data = df, n = nrow(df) - 24) 
@@ -43,7 +47,7 @@ parquet_files <- paste0(parquet_files,"/part-0.parquet")
 
 # Parallel processing using mclapply
 nc = as.numeric(commandArgs(TRUE)[2])
-accuracy_results <- parallel::mclapply(parquet_files[1:16], process_parquet, mc.cores = nc)
+accuracy_results <- parallel::mclapply(parquet_files[1:2], process_parquet, mc.cores = nc)
 
 # Combine accuracy results
 combined_accuracy <- do.call(rbind, accuracy_results)
