@@ -34,6 +34,9 @@ process_parquet <- function(parquet_file) {
   return(accuracy)
 }
 
+
+setwd("/projects/bckj/Team4/Data/partitioned_data")
+
 # List of parquet files in the directory
 parquet_files <- list.files(path = "/projects/bckj/Team4/Data/partitioned_data")
 parquet_files <- paste0(parquet_files,"/part-0.parquet")
