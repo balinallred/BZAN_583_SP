@@ -11,7 +11,7 @@ process_parquet <- function(parquet_file) {
   
   # Arrange by datetime and take the last 10%
   data <- data[order(data$datetime), ]
-  data <- tail(data, round(nrow(data) * 0.1))
+  data <- tail(data, round(nrow(data) * 0.01))
   
   # Create tsibble
   df <- tsibble::tsibble(data[, c(20, 8)])
@@ -43,7 +43,7 @@ parquet_files <- paste0(parquet_files,"/part-0.parquet")
 
 # Parallel processing using mclapply
 nc = as.numeric(commandArgs(TRUE)[2])
-accuracy_results <- parallel::mclapply(parquet_files[1:20], process_parquet, mc.cores = nc)
+accuracy_results <- parallel::mclapply(parquet_files[1:10], process_parquet, mc.cores = nc)
 
 # Combine accuracy results
 combined_accuracy <- do.call(rbind, accuracy_results)
