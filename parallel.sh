@@ -2,16 +2,16 @@
 #SBATCH --job-name utk
 #SBATCH --account=bckj-delta-cpu
 #SBATCH --partition=cpu
-#SBATCH --mem=16g
-#SBATCH --cpus-per-task=1
-#SBATCH --time 00:00:30
+#SBATCH --mem=20g
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --time 00:10:00
 #SBATCH -e ./utk.e
 #SBATCH -o ./utk.o
 
 cd ~/BZAN_583_SP
 pwd
 
-## module names can vary on different platforms
 module load r
 echo "loaded R"
 module list
