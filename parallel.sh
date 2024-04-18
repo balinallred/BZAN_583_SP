@@ -18,6 +18,3 @@ module list
 
 time Rscript Parallel_Code_Assignment.R --args 1
 time Rscript Parallel_Code_Assignment.R --args 2
-time Rscript Parallel_Code_Assignment.R --args 4
-time Rscript Parallel_Code_Assignment.R --args 8
-time Rscript Parallel_Code_Assignment.R --args 16
