@@ -21,7 +21,7 @@ process_parquet <- function(parquet_file) {
   train <- dplyr::slice_head(.data = df, n = nrow(df) - 24) 
   test <- dplyr::slice_tail(.data = df, n = 24)
   
-  # Fit model
+  # Fit models
   fit <- fabletools::model(.data = train, ets = fable::ETS(Temp), arima = fable::ARIMA(Temp))
   
   # Forecast
@@ -37,13 +37,13 @@ process_parquet <- function(parquet_file) {
 
 setwd("/projects/bckj/Team4/Data/partitioned_data")
 
-# List of parquet files in the directory
+# Pulling list of parquets and setting up file for reading
 parquet_files <- list.files()
 parquet_files <- paste0(parquet_files,"/part-0.parquet")
 
 # Parallel processing using mclapply
 nc = as.numeric(commandArgs(TRUE)[2])
-accuracy_results <- parallel::mclapply(parquet_files[1:4], process_parquet, mc.cores = nc)
+accuracy_results <- parallel::mclapply(parquet_files[1:16], process_parquet, mc.cores = nc)
 
 # Combine accuracy results
 combined_accuracy <- do.call(rbind, accuracy_results)
