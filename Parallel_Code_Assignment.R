@@ -20,6 +20,8 @@ process_parquet <- function(parquet_file) {
   
   # Create tsibble
   df <- tsibble::tsibble(data[, c(20, 8)])
+  df <- fill_gaps(df)
+  df[is.na(df$Temp),] <- mean(df$Temp)
   
   # Split into train and test sets
   train <- dplyr::slice_head(.data = df, n = nrow(df) - 24) 
