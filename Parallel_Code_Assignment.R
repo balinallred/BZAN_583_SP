@@ -23,6 +23,9 @@ process_parquet <- function(parquet_file) {
   df <- tsibble::fill_gaps(df)
   df$Temp[is.na(df$Temp)] <- mean(df$Temp)
   
+  # Limiting again after filling gaps (will not keep this later in the assignment but for now it is needed)
+  df <- tail(df, 1000)
+  
   # Split into train and test sets
   train <- dplyr::slice_head(.data = df, n = nrow(df) - 24) 
   test <- dplyr::slice_tail(.data = df, n = 24)
@@ -38,6 +41,7 @@ process_parquet <- function(parquet_file) {
   
   # Return accuracy
   return(accuracy)
+  return(nrow(df))
 }
 
 
