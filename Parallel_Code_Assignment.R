@@ -12,7 +12,7 @@ process_parquet <- function(parquet_file) {
   data$datetime <- as.POSIXct(paste(data[,1], sprintf("%04d", data[,2]), sep = " "), format = "%Y-%m-%d %H%M", tz = "UTC")
   colnames(data)[8] <- "Temp"
   
-  # Arrange by datetime and take the last 10%
+  # Arrange by datetime 
   data <- data[order(data$datetime), ]
   
   # Limiting rows for run time in assignment
@@ -21,7 +21,7 @@ process_parquet <- function(parquet_file) {
   # Create tsibble
   df <- tsibble::tsibble(data[, c(20, 8)])
   df <- tsibble::fill_gaps(df)
-  df$Temp[is.na(df$Temp)] <- mean(df$Temp)
+  df$Temp[is.na(df$Temp)] <- mean(df$Temp, na.rm = TRUE)
   
   # Limiting again after filling gaps (will not keep this later in the assignment but for now it is needed)
   df <- tail(df, 1000)
