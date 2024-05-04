@@ -43,7 +43,6 @@ process_parquet <- function(parquet_file) {
   
   # Calculate accuracy
   accuracy <- fabletools::accuracy(forecast_values, test)
-  accuracy$parquet <- rep(paste0(parquet_file),4)
   
   # Return accuracy
   return(accuracy[,1:7])
