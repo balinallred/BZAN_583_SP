@@ -34,8 +34,8 @@ process_parquet <- function(parquet_file) {
   fit <- fabletools::model(.data = train, 
                            ets = fable::ETS(Temp), 
                            arima = fable::ARIMA(Temp), 
-                           snaive = SNAIVE(Temp ~ lag("day")),
-                           nnet = NNETAR(Temp)
+                           snaive = fable::SNAIVE(Temp ~ lag("day")),
+                           nnet = fable::NNETAR(Temp)
                            )
   
   # Forecast 24 hours in future
@@ -57,7 +57,7 @@ parquet_files <- paste0(parquet_files,"/part-0.parquet")
 
 # Parallel processing using mclapply
 nc = as.numeric(commandArgs(TRUE)[2])
-accuracy_results <- parallel::mclapply(parquet_files[1:16], process_parquet, mc.cores = nc)
+accuracy_results <- parallel::mclapply(parquet_files[1:8], process_parquet, mc.cores = nc)
 
 # Combine accuracy results
 combined_accuracy <- do.call(rbind, accuracy_results)
