@@ -35,7 +35,7 @@ process_parquet <- function(parquet_file) {
                            ets = fable::ETS(Temp), 
                            arima = fable::ARIMA(Temp), 
                            snaive = fable::SNAIVE(Temp ~ lag("day")),
-                           nnet = fable::NNETAR(Temp)
+                           naive = fable::NAIVE(Temp)
                            )
   
   # Forecast 24 hours in future
@@ -43,7 +43,7 @@ process_parquet <- function(parquet_file) {
   
   # Calculate accuracy
   accuracy <- fabletools::accuracy(forecast_values, test)
-  accuracy$parquet <- parquet_file
+  accuracy$parquet <- rep(paste0(parquet_file),4)
   
   # Return accuracy
   return(accuracy[,1:7])
