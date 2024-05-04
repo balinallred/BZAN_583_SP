@@ -5,7 +5,11 @@ Currently Loaded Modules:
 
  
 
+Warning message:
+In parallel::mclapply(parquet_files, process_parquet, mc.cores = nc) :
+  scheduled cores 3, 15, 17, 22, 41, 50 did not deliver results, all values of the jobs will be affected
 
-real	0m34.723s
-user	2m19.089s
-sys	0m5.386s
+real	22m38.684s
+user	371m45.451s
+sys	9m3.651s
+slurmstepd: error: Detected 6 oom_kill events in StepId=3567080.batch. Some of the step tasks have been OOM Killed.
