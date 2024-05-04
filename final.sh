@@ -4,8 +4,8 @@
 #SBATCH --partition=cpu
 #SBATCH --mem=20g
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=16
-#SBATCH --time 00:30:00
+#SBATCH --cpus-per-task=64
+#SBATCH --time 02:00:00
 #SBATCH -e ./utk.e
 #SBATCH -o ./utk.o
 
@@ -16,4 +16,4 @@ module load r
 echo "loaded R"
 module list
 
-time Rscript Parallel_Code_Assignment.R --args 32
+time Rscript Parallel_Code_Assignment.R --args 64
