@@ -15,25 +15,30 @@ process_parquet <- function(parquet_file) {
   # Arrange by datetime 
   data <- data[order(data$datetime), ]
   
-  # Limiting rows for run time in assignment
-  data <- tail(data, 1000)
+  # Limiting to most recent 90 days of observations
+  data <- tail(data, 2160)
   
-  # Create tsibble
+  # Create tsibble and fill gaps with average of set
   df <- tsibble::tsibble(data[, c(20, 8)], index = datetime)
   df <- tsibble::fill_gaps(df)
   df$Temp[is.na(df$Temp)] <- mean(df$Temp, na.rm = TRUE)
   
-  # Limiting again after filling gaps (will not keep this later in the assignment but for now it is needed)
-  df <- tail(df, 1000)
+  # Limiting again after filling gaps
+  df <- tail(df, 2160)
   
   # Split into train and test sets
   train <- dplyr::slice_head(.data = df, n = nrow(df) - 24) 
   test <- dplyr::slice_tail(.data = df, n = 24)
   
   # Fit models
-  fit <- fabletools::model(.data = train, ets = fable::ETS(Temp), arima = fable::ARIMA(Temp))
+  fit <- fabletools::model(.data = train, 
+                           ets = fable::ETS(Temp), 
+                           arima = fable::ARIMA(Temp), 
+                           snaive = SNAIVE(Temp ~ lag("day")),
+                           nnet = NNETAR(Temp)
+                           )
   
-  # Forecast
+  # Forecast 24 hours in future
   forecast_values <- fabletools::forecast(fit, h = 24, times = 0)
   
   # Calculate accuracy
@@ -52,10 +57,13 @@ parquet_files <- paste0(parquet_files,"/part-0.parquet")
 
 # Parallel processing using mclapply
 nc = as.numeric(commandArgs(TRUE)[2])
-accuracy_results <- parallel::mclapply(parquet_files[1:16], process_parquet, mc.cores = nc)
+accuracy_results <- parallel::mclapply(parquet_files[1:16,], process_parquet, mc.cores = nc)
 
 # Combine accuracy results
 combined_accuracy <- do.call(rbind, accuracy_results)
 print(combined_accuracy)
+
+setwd("/u/ballred/BZAN_583_SP")
+write.csv(combined_accuracy, "combined_accuracy.csv")
 
 print(Sys.time() - start)
